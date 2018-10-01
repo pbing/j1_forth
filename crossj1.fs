@@ -314,8 +314,9 @@ meta
 : ; t; ;
 : ;fallthru t;fallthru ;
 : , t, ;
+: h, t, ;
 : c, tc, ;
-
+    
 : constant ( n "name" -- ) create , immediate does> @ (t-constant) ;
 
 : ]asm 
