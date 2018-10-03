@@ -191,12 +191,11 @@ end-code
 ;
 
 : 2@                        ( ptr -- lo hi )
-    dup@ swap 2+ @
+    dup cell+ @  swap @
 ;
 
 : 2!                        ( lo hi ptr -- )
-    rot over                \ hi ptr lo ptr
-    ! 2+ !
+    swap over !  cell+ !
 ;
 
 : 2over >r >r 2dup r> r> ;fallthru
