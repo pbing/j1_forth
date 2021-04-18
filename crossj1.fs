@@ -1,36 +1,6 @@
 ( Cross-compiler for the J1                  JCB 13:12 08/24/10)
 decimal
 
-( outfile is fileid or zero                  JCB 12:30 11/27/10)
-
-0 value outfile
-
-warning off
-: type ( c-addr u )
-    outfile if
-        outfile write-file throw
-    else
-        type
-    then
-;
-: emit ( u )
-    outfile if
-        pad c! pad 1 outfile write-file throw
-    else
-        emit
-    then
-;
-: cr ( u )
-    outfile if
-        s" " outfile write-line throw
-    else
-        cr
-    then
-;
-: space bl emit ;
-: spaces dup 0> if 0 do space loop then ;
-warning on
-
 vocabulary j1assembler  \ assembly storage and instructions
 vocabulary metacompiler \ the cross-compiling words
 vocabulary j1target     \ actual target words
@@ -138,12 +108,6 @@ j1asm
 : 0branch   2/ $2000 or t, ;
 : scall     2/ $4000 or t, ;
 
-\ \ hide Swift-Forth's definition of N
-\ warning off
-\ also forth definitions
-\ : N ( -- n ) [ j1assembler ] N ;
-\ warning on
-
  meta
 
 : dump-words ( c-addr n -- ) \ Write n/2 words from c-addr
@@ -173,7 +137,7 @@ variable padc
 
 : hex-literal ( u -- c-addr u ) s>d <# bl hold #s [char] $ hold #> ;
 
-: disassemble-j
+: disassemble-j ( offset -- offset )
     0 padc !
     dup t@ $8000 and if
         s" LIT " pad+
@@ -208,12 +172,16 @@ variable padc
     cr
 ;
 
-: disassemble-block
+: disassemble-block ( addr u -- )
     0 do
         disassemble-line
     loop
     drop
 ;
+
+: disassemble-block-to-file ( addr u1 c-addr u2 )
+    w/o create-file throw
+    ['] disassemble-block swap outfile-execute ;
 
 j1asm
 
@@ -545,9 +513,3 @@ variable currfilename#
     then ;
 : snap line# getfilename s" (snap)" evaluate ; immediate
 : assert 0= if line# sourcefilename (sliteral) s" (assert)" evaluate then ; immediate
-
-\ hide Swift-Forth's definition of N
-warning off
-also forth definitions
-: N ( -- n ) [ j1assembler ] N ;
-warning on
