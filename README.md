@@ -1,3 +1,3 @@
 # J1 Forth cross compiler
 
-tested with SwiftForth
+tested with gforth-0.7.3
